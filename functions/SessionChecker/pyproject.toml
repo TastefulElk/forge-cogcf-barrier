@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "SessionChecker"
+version = "1.0.0"
+description = "The SessionChecker of the CogCF Barrier"
+authors = ["Stanislas Nanchen <240862+stanislas@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+cachetools = "^3.1.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

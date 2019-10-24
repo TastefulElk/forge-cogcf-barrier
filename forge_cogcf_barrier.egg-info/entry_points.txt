@@ -1,0 +1,5 @@
+[console_scripts]
+deploy = forge_cogcf_barrier:deploy
+info = forge_cogcf_barrier:info
+info-json = forge_cogcf_barrier:info_json
+

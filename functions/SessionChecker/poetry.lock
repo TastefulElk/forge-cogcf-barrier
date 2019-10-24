@@ -1,0 +1,17 @@
+[[package]]
+category = "main"
+description = "Extensible memoizing collections and decorators"
+name = "cachetools"
+optional = false
+python-versions = "*"
+version = "3.1.1"
+
+[metadata]
+content-hash = "2fd10c643f49c09f1fefebd9db005cc5317969c46966c7e048723e0eaa6df8e2"
+python-versions = "^3.7"
+
+[metadata.files]
+cachetools = [
+    {file = "cachetools-3.1.1-py2.py3-none-any.whl", hash = "sha256:428266a1c0d36dc5aca63a2d7c5942e88c2c898d72139fca0e97fdd2380517ae"},
+    {file = "cachetools-3.1.1.tar.gz", hash = "sha256:8ea2d3ce97850f31e4a08b0e2b5e6c34997d7216a9d2c98e0f3978630d4da69a"},
+]

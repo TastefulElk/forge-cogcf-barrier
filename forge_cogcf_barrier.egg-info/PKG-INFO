@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: forge-cogcf-barrier
+Version: 0.1.0
+Summary: A session manager for cloudfront distributions
+Home-page: UNKNOWN
+Author: Stanislas Nanchen
+Author-email: 240862+stanislas@users.noreply.github.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.7,<4.0

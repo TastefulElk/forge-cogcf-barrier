@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform:
+  - AWS::Serverless-2016-10-31
+Description: The SessionChecker of the CogCF Barrier.
+Parameters:
+  SessionTableReadPolicyArn:
+    Type: String
+Resources:
+  SessionCheckerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+                - 'edgelambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Ref SessionTableReadPolicyArn
+  SessionCheckerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.handler
+      Runtime: python3.7
+      CodeUri: ../.forge-asm/functions/SessionChecker/code
+      MemorySize: 128
+      Timeout: 3
+      Role: !GetAtt SessionCheckerRole.Arn
+      AutoPublishAlias: live
+Outputs:
+  SessionCheckerFunctionVersionArn:
+    Value: !Ref SessionCheckerFunction.Version
+    Export:
+      Name: !Sub "${AWS::StackName}-SessionCheckerFunctionVersionArn"

@@ -1,0 +1,172 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform:
+  - AWS::Serverless-2016-10-31
+Description: |
+  The SessionManager of the CogCF Barrier.
+  This stack must be created before the SessionChecker.
+Parameters:
+  UserPoolId:
+    Type: String
+  UserPoolDomainName:
+    Type: String
+  ReadAttributes:
+    Type: CommaDelimitedList
+  WriteAttributes:
+    Type: CommaDelimitedList
+  SupportedIdentityProviders:
+    Type: CommaDelimitedList
+  CloudfrontDomainName:
+    Type: String
+  CookieName:
+    Type: String
+  StageName:
+    Type: String
+    Default: prod
+Resources:
+  SessionTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: valid_until
+        Enabled: true
+  SessionTableReadPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Sid: ddb
+            Action:
+              - "dynamodb:GetItem"
+            Resource:
+              - !GetAtt SessionTable.Arn
+  SessionTableReadWritePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Sid: ddb
+            Action:
+              - "dynamodb:DeleteItem"
+              - "dynamodb:GetItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+            Resource:
+              - !GetAtt SessionTable.Arn
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - openid
+        - profile
+      CallbackURLs:
+        - !Sub "https://${CloudfrontDomainName}/_identity/auth"
+      DefaultRedirectURI: !Sub "https://${CloudfrontDomainName}/_identity/auth"
+      GenerateSecret: false
+      LogoutURLs:
+        - !Sub "https://${CloudfrontDomainName}/_identity/logout"
+      SupportedIdentityProviders: !Ref SupportedIdentityProviders
+      UserPoolId:
+        Ref: UserPoolId
+      ReadAttributes: !Ref ReadAttributes
+      WriteAttributes: !Ref WriteAttributes
+  CognitoSessionApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      EndpointConfiguration: REGIONAL
+      MethodSettings:
+        - LoggingLevel: ERROR
+          ResourcePath: "/*"
+          HttpMethod: "*"
+  CognitoSessionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.handler
+      Runtime: python3.7
+      CodeUri: ../.forge-asm/functions/SessionManager/code
+      MemorySize: 256
+      Timeout: 60
+      Environment:
+        Variables:
+          SESSION_TABLE: !Ref SessionTable
+          COOKIE_NAME: !Ref CookieName
+          USER_POOL_CLIENT_ID: !Ref UserPoolClient
+          USER_POOL_DOMAIN: !Ref UserPoolDomainName
+          CLOUDFRONT_DOMAIN: !Ref CloudfrontDomainName
+      Policies:
+        - !Ref SessionTableReadWritePolicy
+      Events:
+        login:
+          Type: Api
+          Properties:
+            Path: /_identity/login
+            Method: GET
+            RestApiId: !Ref CognitoSessionApi
+        logout:
+          Type: Api
+          Properties:
+            Path: /_identity/logout
+            Method: GET
+            RestApiId: !Ref CognitoSessionApi
+        auth:
+          Type: Api
+          Properties:
+            Path: /_identity/auth
+            Method: GET
+            RestApiId: !Ref CognitoSessionApi
+      AutoPublishAlias: live
+Outputs:
+  SessionTable:
+    Value: !Ref SessionTable
+    Export:
+      Name: !Sub "${AWS::StackName}-SessionTable"
+  SessionTableRegion:
+    Value: !Ref AWS::Region
+    Export:
+      Name: !Sub "${AWS::StackName}-SessionTableRegion"
+  SessionTableArn:
+    Value: !GetAtt SessionTable.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-SessionTableArn"
+  SessionTableReadPolicyArn:
+    Value: !Ref SessionTableReadPolicy
+    Export:
+      Name: !Sub "${AWS::StackName}-SessionTableReadPolicyArn"
+  SessionTableReadWritePolicyArn:
+    Value: !Ref SessionTableReadWritePolicy
+    Export:
+      Name: !Sub "${AWS::StackName}-SessionTableReadWritePolicyArn"
+  CookieName:
+    Value: !Ref CookieName
+    Export:
+      Name: !Sub "${AWS::StackName}-CookieName"
+  LoginUrl:
+    Value: !Sub "https://${CloudfrontDomainName}/_identity/login"
+    Export:
+      Name: !Sub "${AWS::StackName}-LoginUrl"
+  ApiId:
+    Value: !Ref CognitoSessionApi
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiId"
+  ApiDomainName:
+    Value: !Sub "${CognitoSessionApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiDomainName"
+  ApiPath:
+    Value: /prod
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiPath"

@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Resources to conduct tests for the Barrier
+Parameters:
+  Domain:
+    Type: String
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+        UnusedAccountValidityDays: 365
+      AutoVerifiedAttributes:
+        - email
+      MfaConfiguration: "OFF"
+      UsernameAttributes:
+        - email
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - openid
+        - profile
+      CallbackURLs:
+        - "https://barrier.forge-test.ch/_identity/auth"
+      DefaultRedirectURI: !Sub "https://barrier.forge-test.ch/_identity/auth"
+      GenerateSecret: false
+      LogoutURLs:
+        - "https://barrier.forge-test.ch/_identity/logout"
+      SupportedIdentityProviders:
+        - COGNITO
+      UserPoolId: !Ref UserPool
+      ReadAttributes:
+        - email
+        - profile
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref Domain
+      UserPoolId: !Ref UserPool
+Outputs:
+  UserPoolId:
+    Value: !Ref UserPool
+    Export:
+      Name: !Sub "${AWS::StackName}-UserPoolId"
+  UserPoolClientId:
+    Value: !Ref UserPoolClient
+    Export:
+      Name: !Sub "${AWS::StackName}-UserPoolClientId"
+  UserPoolDomain:
+    Value: !Ref UserPoolDomain
+    Export:
+      Name: !Sub "${AWS::StackName}-UserPoolDomain"

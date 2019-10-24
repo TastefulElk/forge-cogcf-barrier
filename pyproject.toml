@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "forge-cogcf-barrier"
+version = "0.1.0"
+description = "A session manager for cloudfront distributions"
+authors = ["Stanislas Nanchen <240862+stanislas@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pyyaml = "^5.1.2"
+tabulate = "^0.8.5"
+termcolor = "^1.1.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+boto3 = "^1.9.253"
+docker = "^4.1.0"
+cachetools = "^3.1.1"
+requests = "^2.22.0"
+pytest-cov = "^2.8.1"
+lxml = "^4.4.1"
+
+[tool.poetry.scripts]
+deploy = "forge_cogcf_barrier:deploy"
+info = "forge_cogcf_barrier:info"
+info-json = "forge_cogcf_barrier:info_json"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
