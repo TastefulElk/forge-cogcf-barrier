@@ -3,7 +3,7 @@
 The _CogCF Barrier_ (or simply barrier) is an application based on AWS SAM to restrict access to a CloudFront
 distribution. It requires a Cognito User Pool with a configured domain to handle the login process.
 
-The article [Restricting access to CloudFront Distributions](https://codesmith/blog/2019-11-05-cogcf-barrier/) 
+The article [Restricting access to CloudFront Distributions](https://codesmith.ch/blog/2019-11-05-cogcf-barrier/) 
 explains how the barrier works.
 
 ## Installation
