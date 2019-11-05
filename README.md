@@ -13,7 +13,7 @@ To install the barrier, you need the following:
 1. the [aws](https://aws.amazon.com/cli/) cli tool;
 2. a configured AWS Profile to connect to your AWS account;
 3. Python 3.7;
-4. the [poetry](https://poetry.eustace.io) dependency manager for Python;
+4. the [poetry](https://poetry.eustace.io) dependency manager for Python (preview version; ≥ 1.0.0.b3);
 5. a Cognito User Pool with a configured domain;
 6. an existing CloudFront distribution or a domain name that will be used for a future CloudFront distribution.
 7. [set up CloudWatch logging for the AWS API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
@@ -23,7 +23,7 @@ Do the following steps:
 
 <ol>
 <li>copy the file <code>assembly.template.yaml</code> and fill in the configuration</li>
-<li>run <code>poetry run deploy -f &lt;assembly file&gt;</code> and wait for the output; it will be similar to the next table.
+<li>run <code>poetry run -- deploy -f &lt;assembly file&gt;</code> and wait for the output; it will be similar to the next table.
 
 <table class="sql-table">
 <tbody>
@@ -56,7 +56,7 @@ association on their behaviors.
 
 </ol>
 
-You can use `poetry run info-json -f  <assembly file>` to print the values in the table above a json document.
+You can use `poetry run -- info-json -f  <assembly file>` to print the values in the table above a json document.
 
 ## Custom Origins
 
