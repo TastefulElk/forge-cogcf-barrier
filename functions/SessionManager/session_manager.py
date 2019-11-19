@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import secrets
@@ -45,10 +46,10 @@ class System:
     def redirect_to_login(self, user_requested_path):
         secret = new_secret()
         login_session_id = self.new_login_session(secret)
-        state = urllib.parse.quote(json.dumps({
+        state = base64.urlsafe_b64encode(json.dumps({
             'secret': secret,
             'path': user_requested_path
-        }))
+        }).encode()).decode()
         return {
             'statusCode': 307,
             'body': None,
@@ -81,7 +82,7 @@ class System:
     def handle_auth(self, event):
         params = event['queryStringParameters']
         code = params['code']
-        event_state = json.loads(urllib.parse.unquote(params['state']))
+        event_state = json.loads(base64.urlsafe_b64decode(params['state']).decode())
         secret = event_state['secret']
         event_path = urllib.parse.unquote(event_state['path'])
         identity = self.verify_identity(event=event, code=code, secret=secret)
