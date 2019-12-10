@@ -108,7 +108,7 @@ class System:
         }
 
     def new_session(self, identity):
-        return self.put_new_session(valid_until=str(time.time() + DAY_IN_MILLISECONDS),
+        return self.put_new_session(valid_until=str(time.time() + DAY_IN_SECOND),
                                     user_identity={'S': identity})
 
     def verify_identity(self, event, code, secret):
