@@ -57,7 +57,7 @@ association on their behaviors.
 
 </ol>
 
-You can use `poetry run -- info-json -f  <assembly file>` to print the values in the table above a json document.
+You can use `poetry run info-json -f  <assembly file>` to print the values in the table above a json document.
 
 ## Custom Origins
 
