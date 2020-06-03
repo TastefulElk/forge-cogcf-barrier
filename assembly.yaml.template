@@ -1,0 +1,42 @@
+# The string prefix that will be used in the names of the CloudFormation Stacks
+StacksPrefix: Barrier
+
+# The name of the session cookie
+CookieName: Barrier
+
+Environment:
+  # The named profile that is used to create the barrier
+  AWSProfile: <profile>
+  # The region where the barrier is installed (all resources but the session checker)
+  Region: <barrier region>
+
+Packaging:
+  # the S3 buckets for the AWS Lambda artifacts; one for the region of the barrier (cf. above)
+  # and one for the us-east-1 region for the session checker.
+  # the S3 buckets must have versioning turned on.
+  S3Buckets:
+    <barrier region>: <barrier region bucket>
+    us-east-1: <us-east-1 bucket>
+  # the prefix used on the S3 buckets.
+  S3Prefix: Barrier
+
+Cloudfront:
+  # The domain name for the CloudFront distribution.
+  DomainName: <cloud front domain>
+
+CognitoUserPool:
+  # The Id of the Cognito User Pool
+  UserPoolId: <user pool id>
+  # The domain name for the Cognito User Pool
+  DomainName: <user pool domain>
+  # Setting for the Cognito User Pool Client, supported properties:
+  # - ReadAttributes
+  # - WriteAttributes
+  # - SupportedIdentityProviders
+  UserPoolClientProperties:
+    ReadAttributes:
+      - email
+    WriteAttributes:
+      - email
+    SupportedIdentityProviders:
+      - COGNITO
